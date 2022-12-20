@@ -89,6 +89,16 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.reloadData()
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let itemIndex = indexPath.section
+        guard let itemId = viewModel.launchies[itemIndex].id else {return}
+        self.viewModel.itemId = itemId
+        
+        let newVc = DetailsViewController()
+        newVc.viewModel = viewModel
+        navigationController?.pushViewController(newVc, animated: true)
+    }
 }
 
 //MARK: - Binding ViewModel

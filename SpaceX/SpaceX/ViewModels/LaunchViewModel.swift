@@ -9,6 +9,7 @@ import Foundation
 
 class LaunchViewModel: ObservableObject {
     //MARK: - Properties
+    var itemId: String = ""
     @Published var launchiesCount: Int = 0
     @Published var launchies: [Launch] = []
     private var apiService = ApiService()
