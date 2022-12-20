@@ -28,6 +28,7 @@ class LaunchTableViewCell: UITableViewCell {
     
     lazy var launchImage: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -59,7 +60,7 @@ extension LaunchTableViewCellLayout {
             launchImage.topAnchor.constraint(equalTo: topAnchor,constant: 8),
             launchImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
             launchImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            launchImage.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.5)
+            launchImage.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.4)
         ])
     }
     
@@ -94,10 +95,14 @@ extension LaunchTableViewCellSetCell {
     
     func setCell(launch: Launch) {
         nameLabel.text = launch.name
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .medium
-        dateLabel.text = dateFormatter.string(from: launch.dateLocal)
-        launchImage.getImageFromUrl(url: launch.links.patch.small)
+        
+        let dateUnix = Double(launch.dateUnix!)
+        let localDate = Date(timeIntervalSince1970: dateUnix)
+        let dateFormater = DateFormatter()
+        dateFormater.timeStyle = .short
+        dateFormater.dateStyle = .medium
+        
+        dateLabel.text = dateFormater.string(from: localDate)
+        launchImage.getImageFromUrl(url: launch.links!.patch!.small!)
     }
 }
