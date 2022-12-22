@@ -18,7 +18,7 @@ class DetailsViewController: UIViewController  {
     }
     
     var favButtonDelegate: changeFavoriteButtonState!
-
+    
     private var isInFavorites: Bool = false
     
     lazy var videoView: WKWebView = {
@@ -74,7 +74,7 @@ class DetailsViewController: UIViewController  {
         let rightGesture = UISwipeGestureRecognizer(target: self, action: #selector(leftGesture))
         rightGesture.direction = .right
         self.view.addGestureRecognizer(rightGesture)
-
+        
     }
 }
 
@@ -158,13 +158,16 @@ extension DetailsViewControllerBinding {
             self.isInFavorites = self.viewModel.checkLaunchIsInFavorite(launch: item)
             favButtonState()
             navigationItem.title = item.name
-            descriptionLabel.text = "Description: " + item.details!
+            if let description = item.details {
+                descriptionLabel.text = "Description: " + description
+            }
             
             if ((item.links?.webcast) != nil), item.links?.youtubeID != nil {
                 let urlString = item.links!.webcast! + item.links!.youtubeID!
                 let url = URL(string: urlString)
                 let urlRequest = URLRequest(url: url!)
                 self.videoView.load(urlRequest)
+                
             }
         }
     }
@@ -201,7 +204,7 @@ extension DetailsViewControllerButtonAction {
     }
     
     @objc func leftGesture() {
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popViewController(animated: false)
     }
     
     func favButtonState() {

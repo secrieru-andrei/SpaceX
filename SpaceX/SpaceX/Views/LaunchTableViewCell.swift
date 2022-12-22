@@ -130,7 +130,9 @@ extension LaunchTableViewCellSetCell {
         dateFormater.timeStyle = .short
         dateFormater.dateStyle = .medium
         dateLabel.text = dateFormater.string(from: localDate)
-        launchImage.getImageFromUrl(url: launch.links!.patch!.small!)
+        if let url = launch.links?.patch?.small {
+            launchImage.getImageFromUrl(url: url)
+        }
         guard let flag = markedAsFavorite else {return}
         favButtonState(flag: flag)
     }

@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = navController
             
             self.window = window
-            window.backgroundColor = UIColor.white
+            window.backgroundColor = UIColor.systemBackground
             window.makeKeyAndVisible()
         }
         guard let _ = (scene as? UIWindowScene) else { return }

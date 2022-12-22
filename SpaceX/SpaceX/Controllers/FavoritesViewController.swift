@@ -84,7 +84,7 @@ extension FavoritesViewControllerTableViewDelegates: UITableViewDelegate, UITabl
         cell.favButton.isEnabled = false
         cell.favButton.isHidden = true
         cell.selectionStyle = .none
-        cell.backgroundColor = UIColor(white: 0, alpha: 0.2)
+        cell.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
         return cell
     }
     
@@ -107,7 +107,7 @@ extension FavoritesViewControllerTableViewDelegates: UITableViewDelegate, UITabl
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.fade
         navigationController?.view.layer.add(transition, forKey: nil)
-        navigationController?.pushViewController(newVc, animated: true)
+        navigationController?.pushViewController(newVc, animated: false)
     }
 }
 

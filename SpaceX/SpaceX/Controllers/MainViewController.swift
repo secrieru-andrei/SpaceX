@@ -46,11 +46,11 @@ extension MainViewControllerButtonsActions {
         newVc.viewModel = viewModel
         newVc.favButtonDelegate = self
         let transition = CATransition()
-        transition.duration = 1
+        transition.duration = 0.5
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.fade
         navigationController?.view.layer.add(transition, forKey: nil)
-        navigationController?.pushViewController(newVc, animated: true)
+        navigationController?.pushViewController(newVc, animated: false)
     }
 }
 
@@ -101,7 +101,7 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
         var markedAsFavorite = viewModel.checkLaunchIsInFavorite(launch: data)
         cell.setCell(launch: data, markedAsFavorite: markedAsFavorite)
         cell.selectionStyle = .none
-        cell.backgroundColor = UIColor(white: 0, alpha: 0.2)
+        cell.backgroundColor = UIColor(white: 0.2 , alpha: 0.5)
         cell.favButton.tag = indexPath.section
         
         cell.setButtonAction = {
@@ -122,10 +122,6 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
         return cell
     }
     
-    @objc func tapped(sender: UIButton) {
-        print(sender.tag)
-    }
-    
     func subscribeTableViewDelegates() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -133,20 +129,21 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        viewModel.itemIndex = indexPath.section
-//        guard let itemId = viewModel.launchies[viewModel.itemIndex].id else {return}
-//        self.viewModel.itemId = itemId
-//
-//        let newVc = DetailsViewController()
-//        newVc.viewModel = viewModel
-//        newVc.favButtonDelegate = self
-//
-//        let transition = CATransition()
-//        transition.duration = 1
-//        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-//        transition.type = CATransitionType.fade
-//        navigationController?.view.layer.add(transition, forKey: nil)
-//        navigationController?.pushViewController(newVc, animated: true)
+        viewModel.itemIndex = indexPath.section
+        guard let itemId = viewModel.launchies[viewModel.itemIndex].id else {return}
+        self.viewModel.itemId = itemId
+
+        let newVc = DetailsViewController()
+        newVc.viewModel = viewModel
+        newVc.loadViewIfNeeded()
+        newVc.favButtonDelegate = self
+
+        let transition = CATransition()
+        transition.duration = 1
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController?.view.layer.add(transition, forKey: nil)
+        navigationController?.pushViewController(newVc, animated: false)
     }
 }
 
@@ -166,7 +163,7 @@ typealias MainViewControllerViewModifiers = MainViewController
 extension MainViewControllerViewModifiers {
     func setUpView() {
         navigationItem.title = "SpaceX Launches"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star"), style: .done, target: self, action: #selector(favoritesButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"), style: .done, target: self, action: #selector(favoritesButtonTapped))
         navigationController?.navigationBar.tintColor = .systemYellow
     }
 }

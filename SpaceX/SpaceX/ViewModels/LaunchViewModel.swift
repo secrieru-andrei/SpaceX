@@ -68,7 +68,6 @@ extension ViewModelFavoritesControl {
     
     func fetchIdFromUserDefaults() {
         favoriteLaunchiesId = userDefaults.object(forKey: "SavedFavorites") as? [String] ?? [String]()
-        print(favoriteLaunchiesId)
     }
     
     func fillFavoritesArrayWithData(launchies: [Launch]) {
