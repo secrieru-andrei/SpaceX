@@ -18,6 +18,7 @@
 		75B1372E2950CF77008C2E2A /* LaunchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B1372D2950CF77008C2E2A /* LaunchViewModel.swift */; };
 		75B137302951E0C4008C2E2A /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B1372F2951E0C4008C2E2A /* DetailsViewController.swift */; };
 		75B13733295220F2008C2E2A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75B13732295220F2008C2E2A /* WebKit.framework */; };
+		75B1373529523BD3008C2E2A /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B1373429523BD3008C2E2A /* FavoritesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		75B1372D2950CF77008C2E2A /* LaunchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewModel.swift; sourceTree = "<group>"; };
 		75B1372F2951E0C4008C2E2A /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		75B13732295220F2008C2E2A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		75B1373429523BD3008C2E2A /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 			children = (
 				75B137222950B9AF008C2E2A /* MainViewController.swift */,
 				75B1372F2951E0C4008C2E2A /* DetailsViewController.swift */,
+				75B1373429523BD3008C2E2A /* FavoritesViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				75B1370B2950B5DF008C2E2A /* SceneDelegate.swift in Sources */,
 				75B1372C2950C2A6008C2E2A /* ApiService.swift in Sources */,
 				75B137272950BD65008C2E2A /* LaunchModel.swift in Sources */,
+				75B1373529523BD3008C2E2A /* FavoritesViewController.swift in Sources */,
 				75B1372E2950CF77008C2E2A /* LaunchViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

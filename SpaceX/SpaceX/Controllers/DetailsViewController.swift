@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-class DetailsViewController: UIViewController {
+class DetailsViewController: UIViewController  {
     //MARK: - Properties
     
     var viewModel: LaunchViewModel! {
@@ -17,7 +17,9 @@ class DetailsViewController: UIViewController {
         }
     }
     
-    var activityIndicator: UIActivityIndicatorView!
+    var favButtonDelegate: changeFavoriteButtonState!
+
+    private var isInFavorites: Bool = false
     
     lazy var videoView: WKWebView = {
         let webConfig = WKWebViewConfiguration()
@@ -30,7 +32,7 @@ class DetailsViewController: UIViewController {
     lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .justified
-        label.font = UIFont(name: "BanglaSangamMN", size: 14)
+        label.font = UIFont(name: "BanglaSangamMN", size: 16)
         label.numberOfLines = 0
         return label
     }()
@@ -43,10 +45,36 @@ class DetailsViewController: UIViewController {
         return btn
     }()
     
+    lazy var textLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Add to favorites"
+        label.numberOfLines = 1
+        label.font = UIFont(name: "BanglaSangamMN", size: 16 )
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var favButton: UIButton = {
+        let btn = UIButton()
+        let starImage = UIImage(systemName: "star")
+        let starFilledImage = UIImage(systemName: "star.fill")
+        btn.setImage(starImage, for: .normal)
+        btn.tintColor = .systemYellow
+        btn.setImage(starFilledImage, for: .highlighted)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViewLayout()
         wikipediaLink.addTarget(self, action: #selector(wikipediaButtonTapped), for: .touchUpInside)
+        favButton.addTarget(self, action: #selector(favButtonTapped), for: .touchUpInside)
+        let rightGesture = UISwipeGestureRecognizer(target: self, action: #selector(leftGesture))
+        rightGesture.direction = .right
+        self.view.addGestureRecognizer(rightGesture)
+
     }
 }
 
@@ -57,6 +85,8 @@ extension DetailsViewControllerLayout {
     func setUpViewLayout() {
         setUpVideoViewLayout()
         setUpDescriptionLabelLayout()
+        setUpLabelLayout()
+        setUpFavoriteButton()
         setUpWikipediaButtonLayout()
     }
     
@@ -85,16 +115,36 @@ extension DetailsViewControllerLayout {
             descriptionLabel.heightAnchor.constraint(lessThanOrEqualTo: self.view.heightAnchor, multiplier: 0.3)
         ])
     }
-
+    
     func setUpWikipediaButtonLayout() {
         self.view.addSubview(wikipediaLink)
         wikipediaLink.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            wikipediaLink.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
+            wikipediaLink.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 16),
             wikipediaLink.trailingAnchor.constraint(equalTo: descriptionLabel.trailingAnchor),
             wikipediaLink.leadingAnchor.constraint(equalTo: descriptionLabel.leadingAnchor),
             wikipediaLink.heightAnchor.constraint(equalTo: descriptionLabel.heightAnchor)
+        ])
+    }
+    
+    func setUpFavoriteButton() {
+        view.addSubview(favButton)
+        NSLayoutConstraint.activate([
+            favButton.centerYAnchor.constraint(equalTo: textLabel.centerYAnchor),
+            favButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            favButton.widthAnchor.constraint(equalToConstant: 50),
+            favButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    func setUpLabelLayout() {
+        view.addSubview(textLabel)
+        NSLayoutConstraint.activate([
+            textLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
+            textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor , constant: 16),
+            textLabel.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor, multiplier: 0.3),
+            textLabel.heightAnchor.constraint(lessThanOrEqualTo: view.heightAnchor, multiplier: 0.2)
         ])
     }
 }
@@ -105,6 +155,8 @@ extension DetailsViewControllerBinding {
     
     func bind() {
         if let item = viewModel.launchies.first(where: {$0.id == viewModel.itemId}) {
+            self.isInFavorites = self.viewModel.checkLaunchIsInFavorite(launch: item)
+            favButtonState()
             navigationItem.title = item.name
             descriptionLabel.text = "Description: " + item.details!
             
@@ -127,4 +179,37 @@ extension DetailsViewControllerButtonAction {
             UIApplication.shared.open(url)
         }
     }
+    
+    @objc func favButtonTapped() {
+        if isInFavorites == false{
+            viewModel.favoritesCount += 1
+            viewModel.saveToFavorites(launch: viewModel.launchies[viewModel.itemIndex])
+            DispatchQueue.main.async {
+                self.favButton.isHighlighted = true
+                self.isInFavorites = true
+                self.viewModel.saveData()
+            }
+        } else {
+            let newVc = FavoritesViewController()
+            viewModel.favoritesCount -= 1
+            print(viewModel.itemIndex)
+            viewModel.removeFromFavorites(launch: viewModel.favorites[viewModel.itemIndex])
+            newVc.viewModel = self.viewModel
+            self.isInFavorites = false
+        }
+        favButtonDelegate.stateFavoriteButtonChanged()
+    }
+    
+    @objc func leftGesture() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func favButtonState() {
+        if isInFavorites == true {
+            favButton.isHighlighted = true
+        } else {
+            favButton.isHighlighted = false
+        }
+    }
 }
+

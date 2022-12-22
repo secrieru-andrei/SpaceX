@@ -10,6 +10,8 @@ import UIKit
 class LaunchTableViewCell: UITableViewCell {
     
     //MARK: - Properties
+    var setButtonAction: () -> () = { }
+    
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
@@ -32,9 +34,23 @@ class LaunchTableViewCell: UITableViewCell {
         return imageView
     }()
     
+    lazy var favButton: UIButton = {
+        let btn = UIButton()
+        let starImage = UIImage(systemName: "star")
+        let starFilledImage = UIImage(systemName: "star.fill")
+        btn.setImage(starImage, for: .normal)
+        btn.tintColor = .systemYellow
+        btn.setImage(starFilledImage, for: .highlighted)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+    
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUpCellLayout()
+        favButton.addTarget(self, action: #selector(favButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -50,6 +66,7 @@ extension LaunchTableViewCellLayout {
         setUpImageLayout()
         setUpNameLabelLayout()
         setUpDateLabelLayout()
+        setUpFavoritesButtonLayout()
     }
     
     func setUpImageLayout() {
@@ -87,22 +104,51 @@ extension LaunchTableViewCellLayout {
             dateLabel.heightAnchor.constraint(equalTo: nameLabel.heightAnchor)
         ])
     }
+    
+    func setUpFavoritesButtonLayout() {
+        contentView.addSubview(favButton)
+        favButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            favButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            favButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            favButton.widthAnchor.constraint(equalToConstant: 50),
+            favButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
 }
 
 //MARK: - Set Cell
 typealias LaunchTableViewCellSetCell = LaunchTableViewCell
 extension LaunchTableViewCellSetCell {
     
-    func setCell(launch: Launch) {
+    func setCell(launch: Launch, markedAsFavorite: Bool?) {
         nameLabel.text = launch.name
-        
         let dateUnix = Double(launch.dateUnix!)
         let localDate = Date(timeIntervalSince1970: dateUnix)
         let dateFormater = DateFormatter()
         dateFormater.timeStyle = .short
         dateFormater.dateStyle = .medium
-        
         dateLabel.text = dateFormater.string(from: localDate)
         launchImage.getImageFromUrl(url: launch.links!.patch!.small!)
+        guard let flag = markedAsFavorite else {return}
+        favButtonState(flag: flag)
+    }
+    
+    func favButtonState(flag: Bool) {
+        if flag == true {
+            favButton.isHighlighted = true
+        } else {
+            favButton.isHighlighted = false
+        }
+    }
+}
+
+//MARK: - Buttons Actions
+typealias LaunchTableViewCellBtnActions = LaunchTableViewCell
+extension LaunchTableViewCellBtnActions {
+    
+    @objc func favButtonTapped () {
+        setButtonAction()
     }
 }

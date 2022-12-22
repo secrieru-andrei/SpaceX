@@ -8,6 +8,12 @@
 import UIKit
 import Combine
 
+protocol changeFavoriteButtonState {
+    func stateFavoriteButtonChanged()
+    
+    
+}
+
 class MainViewController: UIViewController {
     
     //MARK: - Properties
@@ -27,6 +33,7 @@ class MainViewController: UIViewController {
         setUpView()
         setUpViewLayout()
         bindViewModel()
+        viewModel.fetchIdFromUserDefaults()
     }
 }
 
@@ -35,7 +42,15 @@ typealias MainViewControllerButtonsActions = MainViewController
 extension MainViewControllerButtonsActions {
     
     @objc func favoritesButtonTapped() {
-        
+        let newVc = FavoritesViewController()
+        newVc.viewModel = viewModel
+        newVc.favButtonDelegate = self
+        let transition = CATransition()
+        transition.duration = 1
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController?.view.layer.add(transition, forKey: nil)
+        navigationController?.pushViewController(newVc, animated: true)
     }
 }
 
@@ -62,7 +77,12 @@ extension MainViewControllerLayout {
 
 //MARK: - TableView Delegates
 typealias MainViewControllerTableViewDelegates = MainViewController
-extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableViewDataSource {
+extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableViewDataSource, changeFavoriteButtonState {
+    
+    func stateFavoriteButtonChanged() {
+        self.tableView.reloadData()
+    }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
@@ -78,10 +98,32 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! LaunchTableViewCell
         let data = viewModel.launchies[indexPath.section]
-        cell.setCell(launch: data)
+        var markedAsFavorite = viewModel.checkLaunchIsInFavorite(launch: data)
+        cell.setCell(launch: data, markedAsFavorite: markedAsFavorite)
         cell.selectionStyle = .none
         cell.backgroundColor = UIColor(white: 0, alpha: 0.2)
+        cell.favButton.tag = indexPath.section
+        
+        cell.setButtonAction = {
+            if markedAsFavorite == false{
+                self.viewModel.favoritesCount += 1
+                self.viewModel.saveToFavorites(launch: data)
+                DispatchQueue.main.async {
+                    cell.favButton.isHighlighted = true
+                    markedAsFavorite = true
+                    self.viewModel.saveData()
+                }
+            } else {
+                self.viewModel.favoritesCount -= 1
+                self.viewModel.removeFromFavorites(launch: data)
+                markedAsFavorite = false
+            }
+        }
         return cell
+    }
+    
+    @objc func tapped(sender: UIButton) {
+        print(sender.tag)
     }
     
     func subscribeTableViewDelegates() {
@@ -91,13 +133,20 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let itemIndex = indexPath.section
-        guard let itemId = viewModel.launchies[itemIndex].id else {return}
-        self.viewModel.itemId = itemId
-        
-        let newVc = DetailsViewController()
-        newVc.viewModel = viewModel
-        navigationController?.pushViewController(newVc, animated: true)
+//        viewModel.itemIndex = indexPath.section
+//        guard let itemId = viewModel.launchies[viewModel.itemIndex].id else {return}
+//        self.viewModel.itemId = itemId
+//
+//        let newVc = DetailsViewController()
+//        newVc.viewModel = viewModel
+//        newVc.favButtonDelegate = self
+//
+//        let transition = CATransition()
+//        transition.duration = 1
+//        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+//        transition.type = CATransitionType.fade
+//        navigationController?.view.layer.add(transition, forKey: nil)
+//        navigationController?.pushViewController(newVc, animated: true)
     }
 }
 
@@ -108,6 +157,7 @@ extension MainViewControllerBindings {
         viewModel.$launchies.sink { [weak self] launch in
             self?.viewModel.launchiesCount = launch.count
             self?.subscribeTableViewDelegates()
+            self?.viewModel.fillFavoritesArrayWithData(launchies: launch)
         }.store(in: &cancelabless)
     }
 }
