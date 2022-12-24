@@ -115,7 +115,7 @@ extension MainViewControllerTableViewDelegates: UITableViewDelegate, UITableView
                 }
             } else {
                 self.viewModel.favoritesCount -= 1
-                self.viewModel.removeFromFavorites(launch: data)
+                self.viewModel.removeFromFavorites(launchId: data.id!)
                 markedAsFavorite = false
             }
         }

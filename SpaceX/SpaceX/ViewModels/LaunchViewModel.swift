@@ -48,9 +48,9 @@ extension ViewModelFavoritesControl {
         favoriteLaunchiesId.append(launch.id!)
     }
     
-    func removeFromFavorites(launch: Launch){
-        favorites.removeAll(where: {$0.id == launch.id})
-        favoriteLaunchiesId.removeAll(where: {$0 == launch.id})
+    func removeFromFavorites(launchId: String){
+        favorites.removeAll(where: {$0.id == launchId})
+        favoriteLaunchiesId.removeAll(where: {$0 == launchId})
         self.saveData()
     }
     

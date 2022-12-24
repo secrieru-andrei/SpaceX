@@ -196,7 +196,7 @@ extension DetailsViewControllerButtonAction {
             let newVc = FavoritesViewController()
             viewModel.favoritesCount -= 1
             print(viewModel.itemIndex)
-            viewModel.removeFromFavorites(launch: viewModel.favorites[viewModel.itemIndex])
+            viewModel.removeFromFavorites(launchId: viewModel.itemId)
             newVc.viewModel = self.viewModel
             self.isInFavorites = false
         }
